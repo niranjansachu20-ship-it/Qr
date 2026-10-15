@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Access</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        video { width: 100%; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <h1>Camera Access</h1>
+    <button onclick="startCamera()">ക്യാമറ ഓൺ ചെയ്യുക</button>
+    <button onclick="switchCamera()">ക്യാമറ മാറ്റുക</button>
+    <br><br>
+    <video id="video" autoplay playsinline></video>
+
+    <script>
+        let currentStream;
+        let useFrontCamera = true;
+
+        async function startCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+
+            const constraints = {
+                video: { facingMode: useFrontCamera ? "user" : "environment" }
+            };
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                currentStream = stream;
+                document.getElementById('video').srcObject = stream;
+            } catch (err) {
+                console.error("Error accessing camera: ", err);
+            }
+        }
+
+        function switchCamera() {
+            useFrontCamera = !useFrontCamera;
+            startCamera();
+        }
+    </script>
+</body>
+</html>
